@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>☁️ 구름을 따라 올라가 보자</title>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Jua','Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#3f3d56;background:linear-gradient(180deg,#bfe9ff 0%,#e9f7ff 45%,#fff4dc 100%);min-height:100vh;overflow-x:hidden}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer}
+.screen{display:none}.screen.on{display:block}
+.read{font-family:'Gowun Dodum','Malgun Gothic',sans-serif;line-height:1.7}
+/* start */
+#start{min-height:100vh;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px 16px}
+#start.on{display:flex}
+.title{font-size:46px;color:#2563eb;text-shadow:3px 3px 0 #fff,6px 6px 0 #bae6fd;margin:10px 0}
+.sub{font-size:21px;color:#64748b;margin-bottom:22px}
+.card{background:#fff;border-radius:26px;box-shadow:0 8px 0 #cbe7f7,0 14px 28px rgba(56,189,248,.15);padding:22px}
+.inp{font-size:19px;padding:10px 14px;border:3px solid #bae6fd;border-radius:14px;width:100%;outline:none;background:#fff;color:#3f3d56}
+.inp:focus{border-color:#38bdf8}
+textarea.inp{min-height:84px;resize:vertical;font-family:'Gowun Dodum',sans-serif;font-size:17px;line-height:1.6}
+.inp:disabled{background:#f8fafc;color:#475569;border-color:#e2e8f0}
+.big{font-size:21px;padding:12px 28px;border:none;border-radius:18px;color:#fff;background:#fb7185;box-shadow:0 5px 0 #e11d48;transition:.1s}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #e11d48}
+.big.blue{background:#38bdf8;box-shadow:0 5px 0 #0284c7}
+.big.green{background:#34d399;box-shadow:0 5px 0 #059669}
+.big.sm{font-size:17px;padding:8px 18px}
+.big:disabled{background:#cbd5e1;box-shadow:0 5px 0 #94a3b8;cursor:default}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lab{font-size:17px;text-align:left;margin:10px 0 4px;display:block}
+/* top */
+.top{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;gap:10px;flex-wrap:wrap;max-width:1200px;margin:auto}
+.pill{background:#fff;border-radius:999px;padding:7px 16px;font-size:18px;box-shadow:0 4px 0 #cbe7f7}
+.save{font-size:15px;color:#64748b}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:4px 16px 16px;max-width:1200px;margin:auto}
+.tab{border:none;background:#fff;border-radius:18px;padding:10px 16px;font-size:18px;color:#3f3d56;box-shadow:0 5px 0 #cbe7f7;display:flex;align-items:center;gap:6px}
+.tab .n{background:#fb7185;color:#fff;border-radius:50%;width:28px;height:28px;line-height:28px;font-size:16px;text-align:center}
+.tab.on{background:#38bdf8;color:#fff;box-shadow:0 5px 0 #0284c7}
+.tab.on .n{background:#fff;color:#0284c7}
+.tab.lock{filter:grayscale(1);opacity:.5;cursor:not-allowed}
+.wrap{max-width:1200px;margin:auto;padding:0 18px 120px}
+.stage{display:none}.stage.on{display:block}
+h2{font-size:30px;color:#1d4ed8;margin:4px 0 12px}
+h3{font-size:22px;color:#0f172a;margin:2px 0 8px}
+.box{margin-bottom:18px}
+.goal{background:#fef3c7;border-radius:18px;padding:12px 16px;font-size:18px;line-height:1.55;border:3px dashed #fbbf24;margin-bottom:16px}
+.recall{background:#ecfeff;border-radius:16px;padding:10px 14px;font-size:16px;border:2px solid #a5f3fc;margin-bottom:12px}
+.two{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px}
+@media(max-width:900px){.two{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
+.photo{width:100%;border-radius:18px;display:block;max-height:420px;object-fit:cover}
+.nophoto{border-radius:18px;background:repeating-linear-gradient(45deg,#e0f2fe,#e0f2fe 14px,#f0f9ff 14px,#f0f9ff 28px);height:260px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#0369a1;text-align:center;padding:20px}
+canvas{width:100%;display:block;border-radius:18px;touch-action:none}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:16px;border-radius:10px;background:linear-gradient(90deg,#fde68a,#bae6fd);outline:none;margin:10px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;border-radius:50%;background:#fff;border:5px solid #fb7185;cursor:pointer}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:5px solid #fb7185;cursor:pointer}
+.ro{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:6px}
+.ro div{background:#f0f9ff;border-radius:14px;padding:8px 10px;text-align:center}
+.ro b{display:block;font-size:24px;color:#0f172a;font-weight:normal}
+.ro span{font-size:14px;color:#64748b}
+.ro .sat{background:#e0e7ff}
+.condrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.cond{border:3px solid #bae6fd;background:#fff;border-radius:14px;padding:6px 12px;font-size:16px;color:#3f3d56}
+.cond.on{background:#38bdf8;border-color:#38bdf8;color:#fff}
+table.t{border-collapse:separate;border-spacing:0;width:100%;font-size:17px}
+table.t th{background:#e0f2fe;padding:8px;font-weight:normal}
+table.t th:first-child{border-radius:12px 0 0 0}table.t th:last-child{border-radius:0 12px 0 0}
+table.t td{padding:4px;border-bottom:1px solid #e2e8f0;text-align:center}
+table.t input{width:100%;max-width:110px;font-size:17px;padding:5px 6px;border:2px solid #bae6fd;border-radius:10px;text-align:center}
+table.t input:disabled{background:#f8fafc;border-color:#e2e8f0}
+td.ok input{border-color:#34d399;background:#f0fdf4}
+td.no input{border-color:#fb7185;background:#fff1f2}
+.q{margin:12px 0}
+.q .lab{margin-top:0}
+.inl{display:inline-block;width:110px;font-size:18px;padding:5px 8px;border:3px solid #bae6fd;border-radius:12px;text-align:center;margin:0 4px}
+.fb{font-size:16px;margin-top:4px;min-height:22px}
+.fb.ok{color:#059669}.fb.no{color:#e11d48}
+.lockrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+.lockmsg{font-size:16px;color:#64748b}
+.locked-banner{background:#f1f5f9;border-radius:14px;padding:8px 12px;font-size:16px;color:#475569;margin-top:10px}
+.concept{border-left:8px solid #38bdf8;background:#fff;border-radius:18px;padding:16px 18px;box-shadow:0 6px 0 #cbe7f7;margin-bottom:16px}
+.concept.y{border-color:#fbbf24}.concept.p{border-color:#a78bfa}.concept.g{border-color:#34d399}
+.concept .tag{display:inline-block;background:#e0f2fe;border-radius:999px;padding:2px 12px;font-size:15px;margin-bottom:6px}
+.concept .val{font-size:26px;color:#1d4ed8}
+.concept p{font-size:17px;margin:6px 0}
+.mine{background:#fef9c3;border-radius:10px;padding:2px 8px}
+.formula{font-size:30px;text-align:center;color:#1d4ed8;background:#eff6ff;border-radius:16px;padding:14px;margin:10px 0}
+.waiting{text-align:center;padding:60px 20px;font-size:24px;color:#64748b}
+/* question button */
+#qbtn{position:fixed;right:18px;bottom:18px;z-index:20;border:none;background:#fbbf24;color:#3f3d56;border-radius:999px;padding:14px 22px;font-size:21px;box-shadow:0 6px 0 #d97706}
+#qbtn .c{background:#fff;border-radius:999px;padding:0 9px;margin-left:6px;font-size:17px}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:30;padding:16px}
+.modal.on{display:flex}
+.modal .card{width:min(620px,100%);max-height:90vh;overflow:auto}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.chip{border:3px solid #fde68a;background:#fff;border-radius:999px;padding:5px 14px;font-size:16px;color:#3f3d56}
+.chip.on{background:#fbbf24;border-color:#fbbf24}
+.qitem{background:#fffbeb;border-radius:14px;padding:8px 12px;margin:6px 0;font-family:'Gowun Dodum',sans-serif;font-size:16px}
+.qitem small{font-family:'Jua',sans-serif;color:#92400e;margin-right:6px}
+.toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:999px;font-size:17px;z-index:40;display:none}
+.reset{border:none;background:none;color:#94a3b8;font-size:14px;text-decoration:underline}
+.cgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:900px){.cgrid{grid-template-columns:1fr}}
+.msim{background:#f8fafc;border-radius:16px;padding:10px}
+.msim canvas{background:#fff}
+.mctl{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.big.gray{background:#94a3b8;box-shadow:0 5px 0 #64748b}
+.msim .ro div{background:#fff}
+.mnote{font-size:16px;background:#fffbeb;border-radius:12px;padding:8px 12px;margin-top:8px;min-height:52px}
+.msim .tiny{font-size:13px;color:#94a3b8}
+</style>
+</head>
+<body>
+
+<!-- 시작 화면 -->
+<section id="start" class="screen on">
+  <div style="font-size:72px">☁️</div>
+  <h1 class="title">구름을 따라 올라가 보자</h1>
+  <p class="sub">하늘의 구름을 자세히 보고, 궁금한 것을 찾아봐요</p>
+  <div class="card" style="width:min(460px,100%)">
+    <div class="grid2">
+      <div><label class="lab">반</label><select id="inCls" class="inp"></select></div>
+      <div><label class="lab">번호</label><input id="inNum" class="inp" type="number" min="1" max="40" inputmode="numeric"></div>
+    </div>
+    <label class="lab">이름</label><input id="inName" class="inp" maxlength="10">
+    <label class="lab">모둠</label>
+    <div class="chips" id="grpChips"></div>
+    <div style="margin-top:18px"><button id="goBtn" class="big blue">시작하기</button></div>
+    <p id="startMsg" class="fb no"></p>
+  </div>
+</section>
+
+<!-- 수업 화면 -->
+<section id="main" class="screen">
+  <div class="top">
+    <span class="pill" id="who"></span>
+    <span class="save" id="saveState"></span>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+  <div class="wrap">
+
+    <!-- 1단계 -->
+    <div class="stage" data-st="1">
+      <h2>① 구름 관찰하기</h2>
+      <div class="two">
+        <div class="card box" id="photoBox"></div>
+        <div>
+          <div class="recall read">지난 시간에 찾은 것: 공기가 <b>팽창</b>하면 온도가 내려가고, 수증기가 <b>포화</b>되면 구름이 생겼어요.</div>
+          <div class="card box">
+            <h3>자세히 보기</h3>
+            <label class="lab">ⓐ 구름의 <b>위쪽</b>은 어떤 모양인가요?</label>
+            <input class="inp" id="s1top">
+            <label class="lab">ⓑ 구름의 <b>아래쪽</b>은 어떤 모양인가요? 손가락으로 구름 아래쪽 가장자리를 따라가 보세요.</label>
+            <input class="inp" id="s1bot">
+          </div>
+        </div>
+      </div>
+      <div class="card box">
+        <h3>질문 만들기</h3>
+        <p class="read" style="font-size:17px;margin-bottom:6px">관찰한 것 중에서 "왜 그럴까?", "신기하다" 싶은 것을 질문으로 만들어 봐요. 위쪽과 아래쪽이 다른 점에 주목해도 좋아요.</p>
+        <label class="lab">내 질문</label><input class="inp" id="s1q1" placeholder="왜 …할까? / 만약 …라면?">
+        <div class="lockrow"><button class="big sm" id="s1qlock">질문 보내기 🔒</button><span class="lockmsg">보낸 질문은 반 친구들과 함께 볼 거예요.</span></div>
+      </div>
+      <div class="card box" id="s1wait" style="display:none;text-align:center">
+        <p style="font-size:22px;color:#64748b">💬 반 친구들의 질문을 함께 보고 있어요. 곧 오늘의 탐구 질문이 열려요.</p>
+      </div>
+      <div class="card box" id="s1rev" style="display:none">
+        <div class="formula" style="font-size:32px">오늘의 탐구 질문: 구름 밑면은 왜 평평할까?</div>
+        <label class="lab">내가 만든 질문과 비교해 보세요. 비슷한가요, 다른가요?</label>
+        <input class="inp" id="s1link">
+        <label class="lab">구름 밑면이 평평한 까닭을 지금 내 생각으로 써 봐요.</label>
+        <textarea class="inp" id="s1idea"></textarea>
+        <div class="lockrow"><button class="big sm" id="s1lock">저장하고 잠그기 🔒</button><span class="lockmsg">잠그면 고칠 수 없어요. 수업 끝에 다시 볼 거예요.</span></div>
+      </div>
+    </div>
+
+    <!-- 2단계 -->
+    <div class="stage" data-st="2">
+      <h2>② 공기 덩어리 따라가기</h2>
+      <div class="goal">지표의 공기 덩어리: 기온 <b>26 °C</b>, 이슬점 <b>18 °C</b>. 막대를 움직여 공기 덩어리를 올려 보고, 표를 채워 봐요.</div>
+      <div class="two">
+        <div class="card box">
+          <canvas id="sim2" width="560" height="460"></canvas>
+          <input type="range" id="sim2r" min="0" max="2500" step="50" value="0">
+          <div class="ro" id="sim2ro"></div>
+        </div>
+        <div class="card box">
+          <h3>높이별 기록</h3>
+          <table class="t" id="tbl2"><thead><tr><th>높이(m)</th><th>공기 덩어리 기온(°C)</th><th>이슬점(°C)</th></tr></thead><tbody></tbody></table>
+          <canvas id="plot2" width="520" height="360" style="margin-top:12px;background:#f8fafc"></canvas>
+        </div>
+      </div>
+      <div class="card box">
+        <h3>표와 그래프에서 찾은 것</h3>
+        <div class="q"><label class="lab">ⓐ 구름이 생기기 <b>전</b>, 공기 덩어리 기온은 100 m 올라갈 때마다 <input class="inl" id="s2a" inputmode="decimal"> °C씩 내려간다.</label><div class="fb" id="f2a"></div></div>
+        <div class="q"><label class="lab">ⓑ 구름이 생기기 전, 이슬점은 100 m 올라갈 때마다 <input class="inl" id="s2b" inputmode="decimal"> °C씩 내려간다.</label><div class="fb" id="f2b"></div></div>
+        <div class="q"><label class="lab">ⓒ 구름이 생기기 시작한 높이는 <input class="inl" id="s2c" inputmode="numeric"> m이다. 이때 기온과 이슬점은 어떤 관계일까?</label><input class="inp" id="s2c2" style="max-width:520px"><div class="fb" id="f2c"></div></div>
+        <div class="q"><label class="lab">ⓓ 구름이 생긴 <b>뒤</b>, 공기 덩어리 기온은 100 m 올라갈 때마다 <input class="inl" id="s2d" inputmode="decimal"> °C씩 내려간다.</label><div class="fb" id="f2d"></div></div>
+        <div class="q"><label class="lab">ⓔ ⓐ와 ⓓ가 다른 까닭은 무엇일까? 짐작해서 써 봐요.</label><textarea class="inp" id="s2e"></textarea></div>
+        <div class="lockrow"><button class="big sm" id="s2lock">저장하고 잠그기 🔒</button><span class="lockmsg">잠그면 맞았는지 확인할 수 있어요.</span></div>
+      </div>
+    </div>
+
+    <!-- 3단계 -->
+    <div class="stage" data-st="3">
+      <h2>③ 개념 정리</h2>
+      <div class="concept"><div class="cgrid"><div>
+        <span class="tag">불포화 공기 덩어리</span>
+        <h3>건조 단열 감률 <span class="val">약 1 °C/100 m</span></h3>
+        <p class="read">공기 덩어리가 올라가면 주변 기압이 낮아져 <b>팽창</b>해요. 바깥과 열을 주고받지 않고 팽창하는 데 내부 에너지를 쓰므로 기온이 내려가요(단열 팽창). 수증기가 포화되지 않은 공기 덩어리는 100 m 올라갈 때마다 약 1 °C씩 내려가요.</p>
+        <p class="read">반대로 내려올 때는 <b>압축</b>되어 100 m마다 약 1 °C씩 올라가요(단열 압축).</p>
+        <p class="read">내가 2단계에서 찾은 값: <span class="mine" data-mine="a"></span></p>
+      </div><div class="msim" data-mode="dry"><canvas width="480" height="360"></canvas><div class="mctl"><button class="big sm blue" data-act="play">▶ 올려 보기</button><button class="big sm gray" data-act="reset">↺ 처음으로</button></div><input type="range" min="0" max="1000" step="10" value="0"><div class="ro"></div><p class="mnote read"></p></div></div></div>
+      <div class="concept p"><div class="cgrid"><div>
+        <span class="tag">불포화 공기 덩어리</span>
+        <h3>이슬점 감률 <span class="val">약 0.2 °C/100 m</span></h3>
+        <p class="read">공기 덩어리가 팽창하면 같은 부피 안의 수증기가 퍼져서 수증기압이 조금 낮아져요. 그래서 이슬점도 100 m마다 약 0.2 °C씩 낮아져요. 기온은 빨리, 이슬점은 천천히 내려가니 둘 사이의 간격이 점점 좁아져요.</p>
+        <p class="read">내가 2단계에서 찾은 값: <span class="mine" data-mine="b"></span></p>
+      </div><div class="msim" data-mode="dew"><canvas width="480" height="360"></canvas><div class="mctl"><button class="big sm blue" data-act="play">▶ 올려 보기</button><button class="big sm gray" data-act="reset">↺ 처음으로</button></div><input type="range" min="0" max="1000" step="10" value="0"><div class="ro"></div><p class="mnote read"></p></div></div></div>
+      <div class="concept g">
+        <span class="tag">구름 밑면</span>
+        <h3>상승 응결 고도</h3>
+        <p class="read">올라가던 공기 덩어리의 기온이 이슬점과 같아지면 포화되어 응결이 시작돼요. 이 높이를 <b>상승 응결 고도</b>라고 하고, 구름은 여기서부터 생겨요. 그래서 구름 밑면의 높이가 됩니다.</p>
+        <p class="read">내가 2단계에서 찾은 높이: <span class="mine" data-mine="c"></span></p>
+      </div>
+      <div class="concept y"><div class="cgrid"><div>
+        <span class="tag">포화된 공기 덩어리</span>
+        <h3>습윤 단열 감률 <span class="val">약 0.5 °C/100 m</span></h3>
+        <p class="read">포화된 공기 덩어리가 계속 올라가면 수증기가 응결하면서 <b>숨은열(응결열)</b>을 내놓아요. 이 열이 공기를 데워 주니 덜 식어요. 그래서 100 m마다 약 0.5 °C씩만 내려가요.</p>
+        <p class="read">0.5 °C/100 m는 대표값이에요. 실제로는 따뜻하고 수증기가 많을수록 더 작고, 차가울수록 1 °C/100 m에 가까워져요. 포화된 공기 덩어리 안에서는 기온과 이슬점이 같아요.</p>
+        <p class="read">내가 2단계에서 찾은 값: <span class="mine" data-mine="d"></span></p>
+      </div><div class="msim" data-mode="moist"><canvas width="480" height="360"></canvas><div class="mctl"><button class="big sm blue" data-act="play">▶ 올려 보기</button><button class="big sm gray" data-act="reset">↺ 처음으로</button></div><input type="range" min="0" max="1000" step="10" value="0"><div class="ro"></div><p class="mnote read"></p></div></div></div>
+      <div class="card box">
+        <h3>확인해 보기</h3>
+        <div id="s3qs"></div>
+        <div class="q"><label class="lab">습윤 단열 감률이 건조 단열 감률보다 작은 까닭을 <b>숨은열</b>이라는 말을 넣어 내 말로 써 봐요.</label><textarea class="inp" id="s3why"></textarea></div>
+        <div class="lockrow"><button class="big sm" id="s3lock">저장하고 잠그기 🔒</button></div>
+      </div>
+    </div>
+
+    <!-- 4단계 -->
+    <div class="stage" data-st="4">
+      <h2>④ 구름 밑면 높이를 미리 알 수 있을까?</h2>
+      <div class="goal">지표의 기온과 이슬점이 다른 공기 덩어리 네 개를 올려 보고, 구름이 생기기 시작하는 높이를 찾아봐요.</div>
+      <div class="two">
+        <div class="card box">
+          <div class="condrow" id="conds"></div>
+          <canvas id="sim4" width="560" height="460"></canvas>
+          <input type="range" id="sim4r" min="0" max="2500" step="50" value="0">
+          <div class="ro" id="sim4ro"></div>
+        </div>
+        <div class="card box">
+          <h3>공기 덩어리별 기록</h3>
+          <table class="t" id="tbl4"><thead><tr><th></th><th>기온</th><th>이슬점</th><th>차이(기온−이슬점)</th><th>구름 밑면 높이(m)</th></tr></thead><tbody></tbody></table>
+          <canvas id="plot4" width="520" height="340" style="margin-top:12px;background:#f8fafc"></canvas>
+        </div>
+      </div>
+      <div class="card box">
+        <h3>규칙 찾기</h3>
+        <div class="q"><label class="lab">ⓐ 기온과 이슬점의 차이가 1 °C 커질 때마다 구름 밑면은 <input class="inl" id="s4k" inputmode="numeric"> m씩 높아진다.</label><div class="fb" id="f4k"></div></div>
+        <div class="q"><label class="lab">ⓑ 3단계에서 배운 두 감률로 생각해 보자. 공기 덩어리가 100 m 올라갈 때마다 기온과 이슬점의 차이는 <input class="inl" id="s4r" inputmode="decimal"> °C씩 줄어든다.</label><div class="fb" id="f4r"></div></div>
+        <div class="q"><label class="lab">ⓒ 그렇다면 구름 밑면 높이 H(m)를 구하는 식은? &nbsp; H = <input class="inl" id="s4f" inputmode="numeric"> × (지표 기온 − 지표 이슬점)</label><div class="fb" id="f4f"></div></div>
+        <div class="q"><label class="lab">ⓓ ⓐ와 ⓑ는 어떻게 연결될까? 내 말로 써 봐요.</label><textarea class="inp" id="s4w"></textarea></div>
+        <div class="lockrow"><button class="big sm" id="s4lock">저장하고 잠그기 🔒</button><span class="lockmsg">잠그면 맞았는지 확인할 수 있어요.</span></div>
+        <div id="s4reveal" style="display:none">
+          <div class="formula">H = 125 × (T − T<sub>d</sub>)</div>
+          <p class="read" style="font-size:17px">T: 지표 기온, T<sub>d</sub>: 지표 이슬점. 기온과 이슬점의 간격은 100 m마다 1 − 0.2 = 0.8 °C씩 좁아져요. 간격이 0이 되는 높이는 (T − T<sub>d</sub>) ÷ 0.8 × 100 = 125 × (T − T<sub>d</sub>) m예요.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5단계 -->
+    <div class="stage" data-st="5">
+      <h2>⑤ 오늘 서울 하늘의 구름 밑면</h2>
+      <div class="two">
+        <div class="card box">
+          <h3>오늘의 관측값으로 예측하기</h3>
+          <div class="grid2">
+            <div><label class="lab">지금 서울 기온(°C)</label><input class="inp" id="s5T" inputmode="decimal"></div>
+            <div><label class="lab">지금 서울 이슬점(°C)</label><input class="inp" id="s5Td" inputmode="decimal"></div>
+          </div>
+          <label class="lab">내가 계산한 구름 밑면 높이(m)</label><input class="inp" id="s5H" inputmode="numeric">
+          <div class="fb" id="f5H"></div>
+          <label class="lab">Windy의 구름 밑면(Cloud base) 높이(m)</label><input class="inp" id="s5W" inputmode="numeric">
+          <label class="lab">두 값이 다르다면 그 까닭은 무엇일까?</label><textarea class="inp" id="s5diff"></textarea>
+        </div>
+        <div class="card box">
+          <h3>처음 생각과 지금 생각</h3>
+          <label class="lab">처음 내 생각</label>
+          <div class="qitem" id="s5first"></div>
+          <label class="lab">구름 밑면이 평평한 까닭을 지금 다시 써 봐요.</label><textarea class="inp" id="s5now"></textarea>
+          <label class="lab">내 생각은 어떻게 바뀌었나요? 무엇 때문에 바뀌었나요?</label><textarea class="inp" id="s5chg"></textarea>
+          <div class="lockrow"><button class="big sm green" id="s5lock">저장하고 잠그기 🔒</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="waiting" id="waitMsg" style="display:none">🔒 아직 열리지 않았어요</div>
+    <div style="text-align:center;margin-top:30px"><button class="reset" id="resetBtn">이 기기에서 처음부터 다시 시작하기</button></div>
+  </div>
+</section>
+
+<button id="qbtn" style="display:none">❓ 질문 만들기<span class="c" id="qcount">0</span></button>
+<div class="modal" id="qmodal">
+  <div class="card">
+    <h3>궁금한 것을 질문으로 남겨요</h3>
+    <div class="chips" id="qtags"></div>
+    <textarea class="inp" id="qtext" placeholder="예) 구름 밑면 높이는 하루 동안 바뀔까?"></textarea>
+    <div class="lockrow"><button class="big sm" id="qsave">질문 보내기</button><button class="big sm blue" id="qclose">닫기</button></div>
+    <h3 style="margin-top:16px">내가 만든 질문</h3>
+    <div id="qlist"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== Firebase 설정 ===== */
+const firebaseConfig = {
+  apiKey: "AIzaSyCmdo6XSf8Hu62aPZezynd9WoEMsj5mc5M",
+  authDomain: "cloud-9e6ad.firebaseapp.com",
+  projectId: "cloud-9e6ad"
+};
+const COL = 'lcl1', CTRL = 'lcl1_ctrl';
+const NSTAGE = 5;
+const FS = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents`;
+const SKEY = 'lcl1_student_' + firebaseConfig.projectId;
+
+/* ===== 물리: 공기 덩어리 ===== */
+const DRY = 1.0, DEW = 0.2, MOIST = 0.5;      // °C/100 m
+function lclOf(T0, Td0){ return 125 * (T0 - Td0); }
+function parcelAt(T0, Td0, z){
+  const H = lclOf(T0, Td0);
+  if (z <= H) return { T: T0 - DRY * z / 100, Td: Td0 - DEW * z / 100, sat: z === H, H };
+  const Tc = T0 - DRY * H / 100;
+  const T = Tc - MOIST * (z - H) / 100;
+  return { T, Td: T, sat: true, H };
+}
+function es(t){ return 6.112 * Math.exp(17.67 * t / (t + 243.5)); }
+function rh(T, Td){ return Math.min(100, 100 * es(Td) / es(T)); }
+function fmt(x){ const r = Math.round(x * 10) / 10; return (Object.is(r, -0) ? 0 : r).toFixed(1); }
+function num(v){ if (v === undefined || v === null) return NaN; const s = String(v).trim().replace(/\s/g,'').replace('−','-'); if (s === '') return NaN; return Number(s); }
+function near(v, target, tol){ const n = num(v); return !isNaN(n) && Math.abs(n - target) <= tol; }
+
+const C2 = { T0: 26, Td0: 18 };
+const H2 = [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000];
+const CONDS = [
+  { id: 'A', T0: 20, Td0: 16 },
+  { id: 'B', T0: 24, Td0: 12 },
+  { id: 'C', T0: 30, Td0: 14 },
+  { id: 'D', T0: 22, Td0: 20 }
+];
+const QS3 = [
+  { id: 'q1', text: '지표 기온이 20 °C인 불포화 공기 덩어리가 600 m 올라가면 기온은 몇 °C일까?', ans: 14, tol: 0.05, unit: '°C', hint: '불포화 공기 덩어리는 100 m에 약 1 °C씩 내려가요.' },
+  { id: 'q2', text: '이 공기 덩어리의 지표 이슬점이 15 °C라면, 500 m 올라갔을 때 이슬점은 몇 °C일까? (아직 불포화)', ans: 14, tol: 0.05, unit: '°C', hint: '이슬점은 100 m에 약 0.2 °C씩 내려가요.' },
+  { id: 'q3', text: '1000 m에서 포화된 공기 덩어리의 기온이 12 °C이다. 포화된 채로 1600 m까지 올라가면 기온은 몇 °C일까?', ans: 9, tol: 0.05, unit: '°C', hint: '포화된 공기 덩어리는 100 m에 약 0.5 °C씩 내려가요.' },
+  { id: 'q4', text: '불포화 공기 덩어리가 산을 따라 1000 m 내려왔다. 처음 기온이 10 °C였다면 내려온 뒤 기온은?', ans: 20, tol: 0.05, unit: '°C', hint: '내려올 때는 압축되어 기온이 올라가요.' }
+];
+const TAGS = ['왜?', '만약 ~라면?', '어떻게?', '얼마나?', '기타'];
+
+/* ===== 상태 ===== */
+function blank(){
+  return {
+    s1: { top: '', bot: '', q1: '', qlocked: false, link: '', idea: '', locked: false },
+    s2: { tbl: {}, a: '', b: '', c: '', c2: '', d: '', e: '', locked: false },
+    s3: { q: {}, why: '', locked: false },
+    s4: { rows: {}, k: '', r: '', f: '', w: '', locked: false },
+    s5: { T: '', Td: '', H: '', W: '', diff: '', now: '', chg: '', locked: false },
+    qs: []
+  };
+}
+let S = blank();
+let ME = null;            // {cls,num,name,group}
+let AUTH = null;          // {idToken, refreshToken, uid, exp}
+let STAGE = 1, VIEW = 1, REVEAL = false;
+
+function store(){ try { localStorage.setItem(SKEY, JSON.stringify({ AUTH, ME })); } catch (e) {} }
+function load(){ try { return JSON.parse(localStorage.getItem(SKEY) || 'null'); } catch (e) { return null; } }
+
+/* ===== 인증·저장 (REST) ===== */
+async function signUpAnon(){
+  const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ returnSecureToken: true }) });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error && j.error.message || 'auth');
+  AUTH = { idToken: j.idToken, refreshToken: j.refreshToken, uid: j.localId, exp: Date.now() + (Number(j.expiresIn) - 120) * 1000 };
+}
+async function token(){
+  if (AUTH && Date.now() < AUTH.exp) return AUTH.idToken;
+  const r = await fetch(`https://securetoken.googleapis.com/v1/token?key=${firebaseConfig.apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(AUTH.refreshToken) });
+  const j = await r.json();
+  if (!r.ok) throw new Error('refresh');
+  AUTH = { idToken: j.id_token, refreshToken: j.refresh_token, uid: j.user_id, exp: Date.now() + (Number(j.expires_in) - 120) * 1000 };
+  store();
+  return AUTH.idToken;
+}
+async function fsGet(path){
+  const t = await token();
+  const r = await fetch(`${FS}/${path}`, { headers: { Authorization: 'Bearer ' + t } });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('get ' + r.status);
+  return r.json();
+}
+async function fsPatch(path, fields){
+  const t = await token();
+  const r = await fetch(`${FS}/${path}`, { method: 'PATCH', headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, body: JSON.stringify({ fields }) });
+  if (!r.ok) throw new Error('patch ' + r.status);
+  return r.json();
+}
+function maxStageReached(){
+  let m = 1;
+  if (S.s1.locked) m = 2; if (S.s2.locked) m = 3; if (S.s3.locked) m = 4; if (S.s4.locked) m = 5; if (S.s5.locked) m = 6;
+  return m;
+}
+let saveTimer = null, saving = false, dirty = false;
+function setSave(t){ const el = document.getElementById('saveState'); if (el) el.textContent = t; }
+function queueSave(){ dirty = true; setSave('저장 중…'); clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 900); }
+async function saveNow(){
+  if (!AUTH || !ME) return;
+  if (saving) { clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 600); return; }
+  saving = true; dirty = false;
+  try {
+    await fsPatch(`${COL}/${AUTH.uid}`, {
+      name: { stringValue: ME.name }, cls: { stringValue: String(ME.cls) }, num: { integerValue: String(ME.num) },
+      group: { stringValue: String(ME.group) }, done: { integerValue: String(maxStageReached()) },
+      data: { stringValue: JSON.stringify(S) }, updated: { integerValue: String(Date.now()) }
+    });
+    setSave(dirty ? '저장 중…' : '저장됨 ✓');
+  } catch (e) { setSave('저장 실패 · 다시 시도할게요'); dirty = true; clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 4000); }
+  saving = false;
+}
+async function pollCtrl(){
+  try {
+    const d = await fsGet(`${CTRL}/state`);
+    const s = d && d.fields && d.fields.stage ? Number(d.fields.stage.integerValue) : 1;
+    const rv = !!(d && d.fields && d.fields.reveal && d.fields.reveal.booleanValue);
+    if (rv !== REVEAL) { REVEAL = rv; applyS1(); if (rv && S.s1.qlocked) toast('오늘의 탐구 질문이 열렸어요'); }
+    if (s !== STAGE) { const up = s > STAGE; STAGE = s; renderTabs(); if (up) { toast(`${s}단계가 열렸어요`); go(s); } else if (VIEW > STAGE) go(STAGE); }
+  } catch (e) {}
+}
+
+/* ===== 화면 도구 ===== */
+const $ = id => document.getElementById(id);
+function toast(t){ const el = $('toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(toast._t); toast._t = setTimeout(() => el.style.display = 'none', 2200); }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+const NAMES = ['구름 관찰하기', '공기 덩어리 따라가기', '개념 정리', '규칙 찾기', '오늘 서울 하늘'];
+function renderTabs(){
+  const nav = $('tabs'); nav.innerHTML = '';
+  for (let i = 1; i <= NSTAGE; i++) {
+    const b = document.createElement('button');
+    b.className = 'tab' + (i === VIEW ? ' on' : '') + (i > STAGE ? ' lock' : '');
+    b.innerHTML = `<span class="n">${i > STAGE ? '🔒' : i}</span>${NAMES[i - 1]}`;
+    b.onclick = () => { if (i <= STAGE) go(i); else toast('아직 열리지 않았어요'); };
+    nav.appendChild(b);
+  }
+}
+function go(i){
+  VIEW = i; renderTabs();
+  document.querySelectorAll('.stage').forEach(s => s.classList.toggle('on', Number(s.dataset.st) === i && i <= STAGE));
+  $('waitMsg').style.display = i > STAGE ? 'block' : 'none';
+  if (i === 2) { drawSim(sim2); drawPlot2(); }
+  if (i === 3) renderMine();
+  if (i === 4) { drawSim(sim4); drawPlot4(); }
+  if (i === 5) $('s5first').textContent = S.s1.idea || '(아직 쓰지 않았어요)';
+  window.scrollTo({ top: 0 });
+}
+function bindText(id, obj, key, lockFn){
+  const el = $(id);
+  el.value = obj()[key] || '';
+  el.addEventListener('input', () => { obj()[key] = el.value; queueSave(); });
+  return el;
+}
+function lockFields(ids, on){ ids.forEach(id => { const el = $(id); if (el) el.disabled = on; }); }
+function lockBtn(id, locked){ const b = $(id); b.disabled = locked; b.textContent = locked ? '잠금 완료 🔒' : '저장하고 잠그기 🔒'; }
+
+/* ===== 1단계 ===== */
+function initS1(){
+  const box = $('photoBox');
+  const img = new Image();
+  img.className = 'photo'; img.alt = '밑면이 평평한 적운';
+  img.onload = () => { box.innerHTML = ''; box.appendChild(img); };
+  img.onerror = () => { box.innerHTML = '<div class="nophoto">☁️ 화면의 구름 사진을 보세요</div>'; };
+  box.innerHTML = '<div class="nophoto">사진을 불러오는 중…</div>';
+  img.src = 'cloud.jpg';
+  ['top', 'bot', 'q1', 'link', 'idea'].forEach(k => bindText('s1' + k, () => S.s1, k));
+  $('s1qlock').onclick = () => {
+    if (![S.s1.top, S.s1.bot].every(v => String(v).trim())) { toast('ⓐ, ⓑ 관찰을 먼저 써 봐요'); return; }
+    if (!S.s1.q1.trim()) { toast('질문을 먼저 만들어 봐요'); return; }
+    S.s1.qlocked = true;
+    S.qs.push({ t: S.s1.q1.trim(), tag: '관찰 질문', src: 1, at: Date.now() });
+    renderQ(); applyS1(); saveNow();
+  };
+  $('s1lock').onclick = () => {
+    if (!S.s1.idea.trim()) { toast('내 생각을 먼저 써 봐요'); return; }
+    S.s1.locked = true; applyS1(); saveNow();
+  };
+  applyS1();
+}
+function applyS1(){
+  if (!$('s1qlock')) return;
+  lockFields(['s1top', 's1bot', 's1q1'], S.s1.qlocked);
+  const b = $('s1qlock'); b.disabled = S.s1.qlocked; b.textContent = S.s1.qlocked ? '보냈어요 🔒' : '질문 보내기 🔒';
+  $('s1wait').style.display = S.s1.qlocked && !REVEAL ? 'block' : 'none';
+  $('s1rev').style.display = S.s1.qlocked && REVEAL ? 'block' : 'none';
+  lockFields(['s1link', 's1idea'], S.s1.locked); lockBtn('s1lock', S.s1.locked);
+}
+
+/* ===== 시뮬레이션 ===== */
+function makeSim(canvasId, rangeId, roId, cond){
+  return { cv: $(canvasId), rg: $(rangeId), ro: $(roId), cond, z: 0, maxZ: 0 };
+}
+function drawSim(sim){
+  const { cv, cond } = sim, g = cv.getContext('2d'), W = cv.width, Hh = cv.height;
+  const top = 24, bot = Hh - 50, zMax = 2500;
+  const y = z => bot - (bot - top) * z / zMax;
+  const p = parcelAt(cond.T0, cond.Td0, sim.z), H = p.H;
+  g.clearRect(0, 0, W, Hh);
+  const sky = g.createLinearGradient(0, top, 0, bot); sky.addColorStop(0, '#93c5fd'); sky.addColorStop(1, '#e0f2fe');
+  g.fillStyle = sky; g.fillRect(0, 0, W, bot);
+  // 눈금
+  g.font = '15px Jua, sans-serif'; g.fillStyle = '#334155'; g.strokeStyle = 'rgba(255,255,255,.7)'; g.lineWidth = 1;
+  for (let z = 0; z <= zMax; z += 500) { g.beginPath(); g.moveTo(52, y(z)); g.lineTo(W, y(z)); g.stroke(); g.fillText(z + ' m', 6, z === 0 ? y(z) - 6 : y(z) + 5); }
+  // 구름 (도달한 적이 있으면 상승 응결 고도에서부터)
+  if (sim.maxZ >= H) {
+    const base = y(H), topC = y(Math.min(sim.maxZ, zMax));
+    g.fillStyle = 'rgba(255,255,255,.92)';
+    const cx0 = 150, cx1 = W - 30;
+    g.beginPath(); g.moveTo(cx0, base); g.lineTo(cx1, base);
+    const n = 6, step = (cx1 - cx0) / n, h = Math.max(18, base - topC);
+    for (let i = n; i >= 0; i--) { const cx = cx0 + i * step; g.lineTo(cx, base - h * (0.75 + 0.25 * Math.sin(i * 1.7))); }
+    g.closePath(); g.fill();
+    for (let i = 0; i <= n; i++) { const cx = cx0 + i * step; const r = Math.min(34, h * 0.5 + 10); g.beginPath(); g.arc(cx, base - h * (0.75 + 0.25 * Math.sin(i * 1.7)), r, 0, Math.PI * 2); g.fill(); }
+    g.fillRect(cx0, base - 2, cx1 - cx0, 2);
+  }
+  // 지면
+  g.fillStyle = '#86efac'; g.fillRect(0, bot, W, Hh - bot); g.fillStyle = '#4ade80'; g.fillRect(0, bot, W, 6);
+  // 공기 덩어리
+  const px = 260, py = y(sim.z), r = 20 + 14 * sim.z / zMax;
+  const warm = Math.max(0, Math.min(1, (p.T - 5) / 25));
+  g.fillStyle = `rgba(${Math.round(120 + 135 * warm)},${Math.round(150 + 40 * warm)},${Math.round(255 - 140 * warm)},.85)`;
+  g.beginPath(); g.arc(px, py, r, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = '#fff'; g.lineWidth = 3; g.stroke();
+  if (p.sat) { g.fillStyle = '#fff'; for (let i = 0; i < 9; i++) { g.beginPath(); g.arc(px + Math.cos(i * 2.4) * r * 0.55, py + Math.sin(i * 2.4) * r * 0.55, 2.5, 0, 7); g.fill(); } }
+  g.fillStyle = '#0f172a'; g.font = '17px Jua, sans-serif';
+  g.fillText('공기 덩어리', px + r + 10, py - 4);
+  g.fillText(fmt(p.T) + ' °C', px + r + 10, py + 16);
+  g.fillText('지표 ' + cond.T0 + ' °C / 이슬점 ' + cond.Td0 + ' °C', 60, bot + 30);
+  // 읽기
+  sim.ro.innerHTML = `<div><span>높이</span><b>${sim.z} m</b></div><div><span>공기 덩어리 기온</span><b>${fmt(p.T)} °C</b></div><div><span>이슬점</span><b>${fmt(p.Td)} °C</b></div><div><span>상대 습도</span><b>${Math.round(rh(p.T, p.Td))} %</b></div><div class="${p.sat ? 'sat' : ''}"><span>상태</span><b>${p.sat ? '포화 ☁️' : '불포화'}</b></div>`;
+}
+function bindSim(sim){
+  sim.rg.addEventListener('input', () => { sim.z = Number(sim.rg.value); sim.maxZ = Math.max(sim.maxZ, sim.z); drawSim(sim); });
+}
+
+/* ===== 2단계 ===== */
+let sim2, sim4;
+function initS2(){
+  sim2 = makeSim('sim2', 'sim2r', 'sim2ro', C2); bindSim(sim2);
+  const tb = $('tbl2').querySelector('tbody'); tb.innerHTML = '';
+  H2.forEach(h => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${h}</td><td data-h="${h}" data-k="T"><input inputmode="decimal"></td><td data-h="${h}" data-k="Td"><input inputmode="decimal"></td>`;
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('td[data-h]').forEach(td => {
+    const h = td.dataset.h, k = td.dataset.k, inp = td.querySelector('input');
+    S.s2.tbl[h] = S.s2.tbl[h] || { T: '', Td: '' };
+    inp.value = S.s2.tbl[h][k];
+    inp.addEventListener('input', () => { S.s2.tbl[h][k] = inp.value; drawPlot2(); queueSave(); });
+  });
+  ['a', 'b', 'c', 'c2', 'd', 'e'].forEach(k => bindText('s2' + k, () => S.s2, k));
+  $('s2lock').onclick = () => {
+    const filled = H2.filter(h => S.s2.tbl[h] && S.s2.tbl[h].T !== '' && S.s2.tbl[h].Td !== '').length;
+    if (filled < 6) { toast('표를 6칸 줄 이상 채워 봐요'); return; }
+    if (!['a', 'b', 'c', 'd'].every(k => String(S.s2[k]).trim())) { toast('ⓐ~ⓓ 빈칸을 채워 봐요'); return; }
+    S.s2.locked = true; applyS2(); saveNow();
+  };
+  applyS2();
+}
+function check2(){
+  const out = {};
+  H2.forEach(h => { const p = parcelAt(C2.T0, C2.Td0, h), r = S.s2.tbl[h] || {}; out[h] = { T: near(r.T, p.T, 0.15), Td: near(r.Td, p.Td, 0.15) }; });
+  out.a = near(S.s2.a, 1, 0.05); out.b = near(S.s2.b, 0.2, 0.02); out.c = near(S.s2.c, 1000, 1); out.d = near(S.s2.d, 0.5, 0.05);
+  return out;
+}
+function applyS2(){
+  const L = S.s2.locked;
+  $('tbl2').querySelectorAll('td[data-h]').forEach(td => { td.querySelector('input').disabled = L; td.classList.remove('ok', 'no'); });
+  lockFields(['s2a', 's2b', 's2c', 's2c2', 's2d', 's2e'], L); lockBtn('s2lock', L);
+  ['a', 'b', 'c', 'd'].forEach(k => { const f = $('f2' + k); f.textContent = ''; f.className = 'fb'; });
+  if (!L) return;
+  const c = check2();
+  $('tbl2').querySelectorAll('td[data-h]').forEach(td => { const v = S.s2.tbl[td.dataset.h] && S.s2.tbl[td.dataset.h][td.dataset.k]; if (v !== '' && v !== undefined) td.classList.add(c[td.dataset.h][td.dataset.k] ? 'ok' : 'no'); });
+  const msg = { a: '구름이 생기기 전 0 m→1000 m: 26 → 16 °C', b: '0 m→1000 m: 18 → 16 °C', c: '기온 = 이슬점이 되는 높이', d: '1000 m→2000 m: 16 → 11 °C' };
+  ['a', 'b', 'c', 'd'].forEach(k => { const f = $('f2' + k); f.className = 'fb ' + (c[k] ? 'ok' : 'no'); f.textContent = c[k] ? '✓ 맞아요' : '다시 생각해 봐요 · ' + msg[k]; });
+}
+function axes(g, W, H, x0, x1, y0, y1, xl, yl, xs, ys){
+  const L = 58, R = W - 16, T = 34, B = H - 42;
+  const X = v => L + (R - L) * (v - x0) / (x1 - x0), Y = v => B - (B - T) * (v - y0) / (y1 - y0);
+  g.clearRect(0, 0, W, H); g.font = '14px Jua, sans-serif'; g.strokeStyle = '#e2e8f0'; g.fillStyle = '#475569'; g.lineWidth = 1;
+  for (let v = x0; v <= x1 + 1e-9; v += xs) { g.beginPath(); g.moveTo(X(v), T); g.lineTo(X(v), B); g.stroke(); g.fillText(String(v), X(v) - 8, B + 18); }
+  for (let v = y0; v <= y1 + 1e-9; v += ys) { g.beginPath(); g.moveTo(L, Y(v)); g.lineTo(R, Y(v)); g.stroke(); g.fillText(String(v), 6, Y(v) + 5); }
+  g.fillStyle = '#0f172a'; g.fillText(xl, (L + R) / 2 - 30, H - 6); g.fillText(yl, 6, 18);
+  return { X, Y };
+}
+function drawPlot2(){
+  const cv = $('plot2'); if (!cv) return; const g = cv.getContext('2d');
+  const { X, Y } = axes(g, cv.width, cv.height, 8, 28, 0, 2000, '온도(°C)', '높이(m)', 2, 400);
+  const series = (k, col) => {
+    const pts = H2.map(h => [num(S.s2.tbl[h] && S.s2.tbl[h][k]), h]).filter(p => !isNaN(p[0]));
+    g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 3; g.beginPath();
+    pts.forEach((p, i) => i ? g.lineTo(X(p[0]), Y(p[1])) : g.moveTo(X(p[0]), Y(p[1]))); g.stroke();
+    pts.forEach(p => { g.beginPath(); g.arc(X(p[0]), Y(p[1]), 5, 0, 7); g.fill(); });
+  };
+  series('T', '#f43f5e'); series('Td', '#3b82f6');
+  g.font = '15px Jua, sans-serif'; g.fillStyle = '#f43f5e'; g.fillText('● 공기 덩어리 기온', cv.width - 170, 34); g.fillStyle = '#3b82f6'; g.fillText('● 이슬점', cv.width - 170, 54);
+}
+
+/* ===== 개념 시뮬레이션: 감률이 생기는 과정 ===== */
+const PSURF = 1013.25, TK0 = 24 + 273.15;
+function pAt(z){ return PSURF * Math.pow(1 - 2.25577e-5 * z, 5.25588); }
+function wsat(T, p){ const e = es(T); return 622 * e / (p - e); }   // g/kg
+function molState(mode, h){
+  if (mode === 'moist') {
+    const z = 1000 + h, T = 14 - 0.5 * h / 100, p = pAt(z);
+    return { z, T, Td: T, p, dryT: 14 - h / 100, cond: wsat(14, pAt(1000)) - wsat(T, p), V: (T + 273.15) / TK0 * PSURF / p };
+  }
+  const z = h, T = 24 - z / 100, Td = 16 - 0.2 * z / 100, p = pAt(z);
+  return { z, T, Td, p, e: es(Td), V: (T + 273.15) / TK0 * PSURF / p };
+}
+const MOLS = [];
+function makeMol(el){
+  const mode = el.dataset.mode, cv = el.querySelector('canvas'), g = cv.getContext('2d');
+  const rg = el.querySelector('input[type=range]'), ro = el.querySelector('.ro'), note = el.querySelector('.mnote');
+  const tiny = document.createElement('p'); tiny.className = 'tiny'; tiny.textContent = '분자의 움직임과 부피 변화는 눈에 잘 보이도록 실제보다 크게 그렸어요.'; el.appendChild(tiny);
+  const rnd = (() => { let s = mode.length * 9301 + 49297; return () => (s = (s * 9301 + 49297) % 233280) / 233280; })();
+  const nAir = mode === 'dew' ? 26 : 34, nVap = mode === 'dry' ? 6 : (mode === 'dew' ? 22 : 24);
+  const mk = kind => { const a = rnd() * Math.PI * 2; return { x: 0.1 + 0.8 * rnd(), y: 0.1 + 0.8 * rnd(), vx: Math.cos(a), vy: Math.sin(a), kind, fl: 0 }; };
+  const mol = [];
+  for (let i = 0; i < nAir; i++) mol.push(mk('air'));
+  for (let i = 0; i < nVap; i++) mol.push(mk('vap'));
+  const outside = Array.from({ length: 110 }, () => [rnd(), rnd()]);
+  const M = { el, mode, cv, h: 0, playing: false, mol, sparks: [] };
+  const btn = el.querySelector('[data-act=play]');
+  function setH(h){ M.h = Math.max(0, Math.min(1000, h)); rg.value = M.h; syncDrops(); info(); if (!M.cv.offsetParent) draw(); }
+  function syncDrops(){
+    if (mode !== 'moist') return;
+    const st = molState('moist', M.h), full = molState('moist', 1000).cond;
+    const target = Math.round(nVap * 0.75 * st.cond / full);
+    let drops = mol.filter(m => m.kind === 'drop');
+    while (drops.length < target) { const v = mol.filter(m => m.kind === 'vap'); if (!v.length) break; const m = v[Math.floor(rnd() * v.length)]; m.kind = 'drop'; m.fl = 1; M.sparks.push({ x: m.x, y: m.y, life: 1 }); drops = mol.filter(m => m.kind === 'drop'); }
+    while (drops.length > target) { drops.pop().kind = 'vap'; }
+  }
+  function info(){
+    const s = molState(mode, M.h), f1 = v => fmt(v);
+    if (mode === 'dry') {
+      ro.innerHTML = `<div><span>높이</span><b>${s.z} m</b></div><div><span>주변 기압</span><b>${Math.round(s.p)} hPa</b></div><div><span>부피(지표 = 100)</span><b>${Math.round(s.V * 100)}</b></div><div><span>기온</span><b>${f1(s.T)} °C</b></div>`;
+      note.innerHTML = M.h === 0 ? '지표에 있는 공기 덩어리예요. ▶를 눌러 올려 보세요.'
+        : '올라갈수록 바깥 공기가 누르는 힘(화살표)이 약해져서 공기 덩어리가 <b>부풀어요</b>. 부풀면서 분자들이 벽을 밀어내느라 에너지를 써서 <b>느려지고</b>, 분자가 느려지면 기온이 내려가요.' + (M.h >= 1000 ? ' <b>1000 m 올라오는 동안 10 °C 내려갔어요 → 100 m에 약 1 °C</b>' : '');
+    } else if (mode === 'dew') {
+      ro.innerHTML = `<div><span>높이</span><b>${s.z} m</b></div><div><span>기온</span><b>${f1(s.T)} °C</b></div><div><span>이슬점</span><b>${f1(s.Td)} °C</b></div><div><span>수증기압</span><b>${f1(s.e)} hPa</b></div>`;
+      note.innerHTML = M.h === 0 ? '파란 점이 수증기 분자예요. ▶를 눌러 올려 보세요.'
+        : M.h >= 1000 ? '<b>기온과 이슬점이 14 °C로 같아졌어요. 포화!</b> 여기가 상승 응결 고도예요. 1000 m 동안 이슬점은 2 °C 내려갔어요 → 100 m에 약 0.2 °C'
+        : '수증기 분자의 <b>개수는 그대로</b>예요. 그런데 공기 덩어리가 부풀어서 같은 공간(점선 네모) 안의 수증기가 <b>줄어들어요</b>. 수증기압이 낮아지니 이슬점도 조금씩 내려가요. 기온보다 훨씬 천천히요.';
+    } else {
+      ro.innerHTML = `<div><span>높이</span><b>${s.z} m</b></div><div><span>기온</span><b>${f1(s.T)} °C</b></div><div><span>숨은열이 없었다면</span><b>${f1(s.dryT)} °C</b></div><div><span>응결한 물</span><b>${s.cond.toFixed(1)} g/kg</b></div>`;
+      note.innerHTML = M.h === 0 ? '상승 응결 고도(1000 m)에서 막 포화된 공기 덩어리예요. ▶를 눌러 더 올려 보세요.'
+        : '계속 부풀며 식으니 수증기가 <b>물방울</b>로 바뀌어요(응결). 이때 <b>숨은열</b>(✨)이 나와 공기를 데워 줘요. 팽창으로 1 °C 식을 때 숨은열이 약 0.5 °C를 다시 데워 주는 셈이에요.' + (M.h >= 1000 ? ' <b>1000 m 동안 5 °C 내려갔어요. 숨은열이 없었다면 10 °C 내려갔을 거예요.</b>' : '');
+    }
+  }
+  function thermo(x, top, bot, T, tMin, tMax, col, label, mark){
+    const y = v => bot - (bot - top) * (v - tMin) / (tMax - tMin);
+    g.fillStyle = '#e2e8f0'; g.beginPath(); g.roundRect ? g.roundRect(x - 7, top - 6, 14, bot - top + 6, 7) : g.rect(x - 7, top - 6, 14, bot - top + 6); g.fill();
+    g.beginPath(); g.arc(x, bot + 10, 13, 0, 7); g.fillStyle = col; g.fill();
+    g.fillRect(x - 4, y(T), 8, bot - y(T) + 4);
+    g.fillStyle = '#64748b'; g.font = '12px Jua, sans-serif';
+    for (let v = tMin; v <= tMax; v += 4) { g.fillRect(x + 8, y(v), 5, 1); g.fillText(v, x + 15, y(v) + 4); }
+    if (mark !== undefined) { g.fillStyle = '#3b82f6'; g.beginPath(); g.moveTo(x - 10, y(mark)); g.lineTo(x - 20, y(mark) - 6); g.lineTo(x - 20, y(mark) + 6); g.fill(); }
+    g.fillStyle = '#0f172a'; g.font = '14px Jua, sans-serif'; g.textAlign = 'center'; g.fillText(label, x, bot + 40); g.textAlign = 'left';
+  }
+  function draw(){
+    const W = cv.width, H = cv.height, s = molState(mode, M.h);
+    g.clearRect(0, 0, W, H);
+    // 바깥 공기 (기압이 낮을수록 듬성듬성)
+    const pr = Math.pow(s.p / PSURF, 3), sceneW = 330, sceneH = mode === 'moist' ? 285 : 330;
+    g.fillStyle = '#eef6ff'; g.fillRect(0, 0, sceneW, sceneH);
+    g.fillStyle = 'rgba(100,116,139,.35)';
+    outside.slice(0, Math.round(110 * pr)).forEach(([a, b]) => { g.beginPath(); g.arc(a * sceneW, b * sceneH, 2.2, 0, 7); g.fill(); });
+    g.fillStyle = '#334155'; g.font = '14px Jua, sans-serif'; g.fillText(`높이 ${s.z} m · 주변 기압 ${Math.round(s.p)} hPa`, 10, 20);
+    // 공기 덩어리 상자
+    const side = 150 * (1 + (s.V - 1) * 3), cx = sceneW / 2, cy = sceneH / 2 + 12, x0 = cx - side / 2, y0 = cy - side / 2;
+    const warm = Math.max(0, Math.min(1, (s.T - 4) / 20));
+    g.fillStyle = `rgba(${Math.round(190 + 60 * warm)},${Math.round(215 - 20 * warm)},${Math.round(250 - 90 * warm)},.55)`;
+    g.fillRect(x0, y0, side, side); g.strokeStyle = '#475569'; g.lineWidth = 2; g.setLineDash([]); g.strokeRect(x0, y0, side, side);
+    // 바깥에서 미는 화살표
+    const al = 8 + 26 * pr; g.strokeStyle = '#f97316'; g.fillStyle = '#f97316'; g.lineWidth = 3;
+    const arrow = (x1, y1, x2, y2) => { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); const a = Math.atan2(y2 - y1, x2 - x1); g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - 8 * Math.cos(a - .5), y2 - 8 * Math.sin(a - .5)); g.lineTo(x2 - 8 * Math.cos(a + .5), y2 - 8 * Math.sin(a + .5)); g.fill(); };
+    [-0.25, 0.25].forEach(f => { arrow(cx + f * side, y0 - al - 4, cx + f * side, y0 - 4); arrow(cx + f * side, y0 + side + al + 4, cx + f * side, y0 + side + 4); arrow(x0 - al - 4, cy + f * side, x0 - 4, cy + f * side); arrow(x0 + side + al + 4, cy + f * side, x0 + side + 4, cy + f * side); });
+    // 이슬점: 고정된 '같은 공간' 창
+    if (mode === 'dew') { g.strokeStyle = '#1d4ed8'; g.setLineDash([5, 4]); g.lineWidth = 2; g.strokeRect(cx - 45, cy - 45, 90, 90); g.setLineDash([]); }
+    // 분자
+    mol.forEach(m => {
+      const px = x0 + m.x * side, py = y0 + m.y * side;
+      if (m.kind === 'air') { g.fillStyle = mode === 'dew' ? 'rgba(100,116,139,.45)' : '#64748b'; g.beginPath(); g.arc(px, py, 3.5, 0, 7); g.fill(); }
+      else if (m.kind === 'vap') { g.fillStyle = '#2563eb'; g.beginPath(); g.arc(px, py, 4, 0, 7); g.fill(); }
+      else { g.fillStyle = '#fff'; g.strokeStyle = '#60a5fa'; g.lineWidth = 2; g.beginPath(); g.arc(px, py, 6.5, 0, 7); g.fill(); g.stroke(); if (m.fl > 0) { g.strokeStyle = `rgba(251,146,60,${m.fl})`; g.lineWidth = 3; g.beginPath(); g.arc(px, py, 6.5 + 14 * (1 - m.fl), 0, 7); g.stroke(); } }
+    });
+    if (mode === 'dew') {
+      const inWin = mol.filter(m => m.kind === 'vap' && Math.abs(x0 + m.x * side - cx) < 45 && Math.abs(y0 + m.y * side - cy) < 45).length;
+      g.fillStyle = '#1d4ed8'; g.font = '14px Jua, sans-serif'; g.fillText(`점선 안 수증기 분자: ${inWin}개`, 10, sceneH - 12);
+    }
+    M.sparks.forEach(sp => { g.fillStyle = `rgba(234,88,12,${sp.life})`; g.font = '16px Jua, sans-serif'; g.fillText('✨+열', x0 + sp.x * side + 6, y0 + sp.y * side - 10 - 24 * (1 - sp.life)); });
+    // 오른쪽: 온도계
+    if (mode === 'dry') thermo(400, 50, 280, s.T, 8, 28, '#f43f5e', '기온');
+    if (mode === 'dew') { thermo(400, 50, 280, s.T, 8, 28, '#f43f5e', '기온', s.Td); g.fillStyle = '#2563eb'; g.font = '14px Jua, sans-serif'; g.fillText('이슬점', 336, 50 + 230 * (1 - (s.Td - 8) / 20) + 5); }
+    if (mode === 'moist') { thermo(370, 40, 230, s.T, 0, 16, '#f43f5e', '실제'); thermo(440, 40, 230, s.dryT, 0, 16, '#94a3b8', '열 없다면'); }
+    // 습윤: 식는 양과 데우는 양
+    if (mode === 'moist') {
+      const x = 200, sc = 120; g.font = '14px Jua, sans-serif';
+      const row = (y, label, bars) => { g.fillStyle = '#0f172a'; g.fillText(label, 10, y + 12); bars.forEach(([x0, w, c]) => { g.fillStyle = c; g.fillRect(x0, y, w, 14); }); };
+      row(296, '팽창으로 식음  −1.0 °C', [[x, sc, '#60a5fa']]);
+      row(318, '숨은열로 데워짐  +0.5 °C', [[x + sc / 2, sc / 2, '#fb923c']]);
+      row(340, '합쳐서  −0.5 °C (100 m마다)', [[x, sc / 2, '#60a5fa']]);
+    }
+  }
+  function step(){
+    const s = molState(mode, M.h);
+    const sp = Math.max(0.22, 1 + ((s.T + 273.15) / TK0 - 1) * 12) * 0.006;
+    mol.forEach(m => {
+      const k = m.kind === 'drop' ? 0.25 : 1;
+      m.x += m.vx * sp * k; m.y += m.vy * sp * k;
+      if (m.x < 0.03) { m.x = 0.03; m.vx = Math.abs(m.vx); } if (m.x > 0.97) { m.x = 0.97; m.vx = -Math.abs(m.vx); }
+      if (m.y < 0.03) { m.y = 0.03; m.vy = Math.abs(m.vy); } if (m.y > 0.97) { m.y = 0.97; m.vy = -Math.abs(m.vy); }
+      if (m.fl > 0) m.fl = Math.max(0, m.fl - 0.02);
+    });
+    M.sparks.forEach(x => x.life -= 0.015); M.sparks = M.sparks.filter(x => x.life > 0);
+    if (M.playing) { if (M.h >= 1000) { M.playing = false; btn.textContent = '▶ 올려 보기'; } else setH(M.h + 4); }
+    draw();
+  }
+  rg.addEventListener('input', () => { M.playing = false; btn.textContent = '▶ 올려 보기'; setH(Number(rg.value)); });
+  btn.onclick = () => { if (M.h >= 1000) setH(0); M.playing = !M.playing; btn.textContent = M.playing ? '⏸ 멈추기' : '▶ 올려 보기'; };
+  el.querySelector('[data-act=reset]').onclick = () => { M.playing = false; btn.textContent = '▶ 올려 보기'; M.sparks = []; setH(0); };
+  M.step = step; M.setH = setH; M.draw = draw;
+  setH(0); draw();
+  return M;
+}
+function initMolSims(){
+  if (MOLS.length) return;
+  document.querySelectorAll('.msim').forEach(el => MOLS.push(makeMol(el)));
+  const loop = () => { MOLS.forEach(m => { if (m.cv.offsetParent) m.step(); }); requestAnimationFrame(loop); };
+  if (window.requestAnimationFrame) requestAnimationFrame(loop);
+}
+
+/* ===== 3단계 ===== */
+function renderMine(){
+  const m = { a: S.s2.a ? S.s2.a + ' °C/100 m' : '-', b: S.s2.b ? S.s2.b + ' °C/100 m' : '-', c: S.s2.c ? S.s2.c + ' m' : '-', d: S.s2.d ? S.s2.d + ' °C/100 m' : '-' };
+  document.querySelectorAll('[data-mine]').forEach(el => el.textContent = m[el.dataset.mine]);
+}
+function initS3(){
+  initMolSims();
+  const box = $('s3qs'); box.innerHTML = '';
+  QS3.forEach((q, i) => {
+    S.s3.q[q.id] = S.s3.q[q.id] || { v: '', ok: false, tries: 0 };
+    const d = document.createElement('div'); d.className = 'q';
+    d.innerHTML = `<label class="lab">${i + 1}. ${q.text}</label><input class="inl" id="s3${q.id}" inputmode="decimal"> ${q.unit} <button class="big sm blue" id="s3${q.id}b">확인</button><div class="fb" id="s3${q.id}f"></div>`;
+    box.appendChild(d);
+    const inp = $('s3' + q.id), st = S.s3.q[q.id];
+    inp.value = st.v;
+    inp.addEventListener('input', () => { st.v = inp.value; queueSave(); });
+    $('s3' + q.id + 'b').onclick = () => {
+      if (st.ok) return;
+      if (String(st.v).trim() === '') { toast('답을 먼저 써 봐요'); return; }
+      st.tries++; st.ok = near(st.v, q.ans, q.tol); showQ3(q); queueSave();
+    };
+    showQ3(q);
+  });
+  bindText('s3why', () => S.s3, 'why');
+  $('s3lock').onclick = () => {
+    if (!S.s3.why.trim()) { toast('까닭을 먼저 써 봐요'); return; }
+    S.s3.locked = true; applyS3(); saveNow();
+  };
+  applyS3();
+}
+function showQ3(q){
+  const st = S.s3.q[q.id], f = $('s3' + q.id + 'f');
+  if (st.ok) { f.className = 'fb ok'; f.textContent = '✓ 맞아요'; $('s3' + q.id).disabled = true; $('s3' + q.id + 'b').disabled = true; }
+  else if (st.tries) { f.className = 'fb no'; f.textContent = '다시 생각해 봐요 · ' + q.hint; }
+  else { f.className = 'fb'; f.textContent = ''; }
+}
+function applyS3(){ lockFields(['s3why'], S.s3.locked); lockBtn('s3lock', S.s3.locked); }
+
+/* ===== 4단계 ===== */
+let condSel = CONDS[0];
+function initS4(){
+  sim4 = makeSim('sim4', 'sim4r', 'sim4ro', condSel); bindSim(sim4);
+  const cr = $('conds'); cr.innerHTML = '';
+  CONDS.forEach(c => {
+    const b = document.createElement('button'); b.className = 'cond' + (c === condSel ? ' on' : '');
+    b.textContent = `${c.id} · ${c.T0} °C / ${c.Td0} °C`;
+    b.onclick = () => { condSel = c; sim4.cond = c; sim4.z = 0; sim4.maxZ = 0; sim4.rg.value = 0; cr.querySelectorAll('.cond').forEach(x => x.classList.toggle('on', x === b)); drawSim(sim4); };
+    cr.appendChild(b);
+  });
+  const tb = $('tbl4').querySelector('tbody'); tb.innerHTML = '';
+  const rows = [{ id: 'P', T0: C2.T0, Td0: C2.Td0, label: '②에서' }].concat(CONDS.map(c => ({ ...c, label: c.id })));
+  rows.forEach(c => {
+    S.s4.rows[c.id] = S.s4.rows[c.id] || { gap: '', H: '' };
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${c.label}</td><td>${c.T0}</td><td>${c.Td0}</td><td data-r="${c.id}" data-k="gap"><input inputmode="decimal"></td><td data-r="${c.id}" data-k="H"><input inputmode="numeric"></td>`;
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('td[data-r]').forEach(td => {
+    const r = td.dataset.r, k = td.dataset.k, inp = td.querySelector('input');
+    inp.value = S.s4.rows[r][k];
+    inp.addEventListener('input', () => { S.s4.rows[r][k] = inp.value; drawPlot4(); queueSave(); });
+  });
+  ['k', 'r', 'f', 'w'].forEach(k => bindText('s4' + k, () => S.s4, k));
+  $('s4lock').onclick = () => {
+    const n = Object.values(S.s4.rows).filter(r => r.gap !== '' && r.H !== '').length;
+    if (n < 4) { toast('표를 4줄 이상 채워 봐요'); return; }
+    if (!['k', 'r', 'f'].every(k => String(S.s4[k]).trim())) { toast('ⓐ~ⓒ 빈칸을 채워 봐요'); return; }
+    S.s4.locked = true; applyS4(); saveNow();
+  };
+  applyS4();
+}
+function rows4(){ return [{ id: 'P', T0: C2.T0, Td0: C2.Td0 }].concat(CONDS); }
+function check4(){
+  const out = {};
+  rows4().forEach(c => { const r = S.s4.rows[c.id] || {}; out[c.id] = { gap: near(r.gap, c.T0 - c.Td0, 0.05), H: near(r.H, lclOf(c.T0, c.Td0), 1) }; });
+  out.k = near(S.s4.k, 125, 0.5); out.r = near(S.s4.r, 0.8, 0.02); out.f = near(S.s4.f, 125, 0.5);
+  return out;
+}
+function applyS4(){
+  const L = S.s4.locked;
+  $('tbl4').querySelectorAll('td[data-r]').forEach(td => { td.querySelector('input').disabled = L; td.classList.remove('ok', 'no'); });
+  lockFields(['s4k', 's4r', 's4f', 's4w'], L); lockBtn('s4lock', L);
+  $('s4reveal').style.display = L ? 'block' : 'none';
+  ['k', 'r', 'f'].forEach(k => { const f = $('f4' + k); f.textContent = ''; f.className = 'fb'; });
+  if (!L) return;
+  const c = check4();
+  $('tbl4').querySelectorAll('td[data-r]').forEach(td => { const v = S.s4.rows[td.dataset.r][td.dataset.k]; if (v !== '') td.classList.add(c[td.dataset.r][td.dataset.k] ? 'ok' : 'no'); });
+  const msg = { k: '그래프에서 점들이 이루는 기울기를 보세요', r: '기온은 1, 이슬점은 0.2씩 내려가요', f: 'ⓐ에서 찾은 값과 같아요' };
+  ['k', 'r', 'f'].forEach(k => { const f = $('f4' + k); f.className = 'fb ' + (c[k] ? 'ok' : 'no'); f.textContent = c[k] ? '✓ 맞아요' : '다시 생각해 봐요 · ' + msg[k]; });
+}
+function drawPlot4(){
+  const cv = $('plot4'); if (!cv) return; const g = cv.getContext('2d');
+  const { X, Y } = axes(g, cv.width, cv.height, 0, 18, 0, 2400, '기온 − 이슬점(°C)', '구름 밑면 높이(m)', 2, 400);
+  g.fillStyle = '#8b5cf6';
+  Object.values(S.s4.rows).forEach(r => { const x = num(r.gap), yv = num(r.H); if (!isNaN(x) && !isNaN(yv)) { g.beginPath(); g.arc(X(x), Y(yv), 7, 0, 7); g.fill(); } });
+}
+
+/* ===== 5단계 ===== */
+function initS5(){
+  ['T', 'Td', 'H', 'W', 'diff', 'now', 'chg'].forEach(k => bindText('s5' + k, () => S.s5, k));
+  ['s5T', 's5Td', 's5H'].forEach(id => $(id).addEventListener('input', check5));
+  $('s5lock').onclick = () => {
+    if (!S.s5.now.trim()) { toast('지금 생각을 먼저 써 봐요'); return; }
+    S.s5.locked = true; applyS5(); saveNow();
+  };
+  applyS5();
+}
+function check5(){
+  const T = num(S.s5.T), Td = num(S.s5.Td), H = num(S.s5.H), f = $('f5H');
+  if (isNaN(T) || isNaN(Td) || isNaN(H)) { f.textContent = ''; f.className = 'fb'; return null; }
+  if (Td > T) { f.className = 'fb no'; f.textContent = '이슬점은 기온보다 높을 수 없어요. 값을 다시 확인해 봐요'; return false; }
+  const ok = Math.abs(H - lclOf(T, Td)) <= 10;
+  f.className = 'fb ' + (ok ? 'ok' : 'no'); f.textContent = ok ? '✓ 계산이 맞아요' : '계산을 다시 확인해 봐요';
+  return ok;
+}
+function applyS5(){ lockFields(['s5T', 's5Td', 's5H', 's5W', 's5diff', 's5now', 's5chg'], S.s5.locked); lockBtn('s5lock', S.s5.locked); check5(); }
+
+/* ===== 질문 ===== */
+let qTag = TAGS[0];
+function initQ(){
+  const tg = $('qtags'); tg.innerHTML = '';
+  TAGS.forEach(t => { const b = document.createElement('button'); b.className = 'chip' + (t === qTag ? ' on' : ''); b.textContent = t; b.onclick = () => { qTag = t; tg.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b)); }; tg.appendChild(b); });
+  $('qbtn').onclick = () => { $('qmodal').classList.add('on'); renderQ(); $('qtext').focus(); };
+  $('qclose').onclick = () => $('qmodal').classList.remove('on');
+  $('qsave').onclick = () => {
+    const t = $('qtext').value.trim(); if (!t) { toast('질문을 먼저 써 봐요'); return; }
+    S.qs.push({ t, tag: qTag, src: VIEW, at: Date.now() }); $('qtext').value = ''; renderQ(); saveNow(); toast('질문을 보냈어요');
+  };
+  renderQ();
+}
+function renderQ(){
+  $('qcount').textContent = S.qs.length;
+  $('qlist').innerHTML = S.qs.length ? S.qs.slice().reverse().map(q => `<div class="qitem"><small>${esc(q.tag)} · ${q.src}단계</small>${esc(q.t)}</div>`).join('') : '<p class="read" style="color:#94a3b8">아직 없어요</p>';
+}
+
+/* ===== 시작 ===== */
+let grpSel = '';
+function initStart(){
+  const sel = $('inCls'); sel.innerHTML = '<option value="">선택</option>' + Array.from({ length: 7 }, (_, i) => `<option value="${i + 1}">${i + 1}반</option>`).join('');
+  const gc = $('grpChips'); gc.innerHTML = '';
+  [1, 2, 3, 4].forEach(n => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = n + '모둠'; b.onclick = () => { grpSel = String(n); gc.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b)); }; gc.appendChild(b); });
+  $('goBtn').onclick = start;
+}
+async function start(){
+  const cls = $('inCls').value, numv = $('inNum').value.trim(), name = $('inName').value.trim();
+  if (!cls || !numv || !name || !grpSel) { $('startMsg').textContent = '반, 번호, 이름, 모둠을 모두 골라 주세요'; return; }
+  $('goBtn').disabled = true; $('startMsg').textContent = '';
+  try {
+    ME = { cls, num: Number(numv), name, group: grpSel };
+    if (!AUTH) await signUpAnon();
+    store();
+    await enter();
+  } catch (e) { $('startMsg').textContent = '연결하지 못했어요. 인터넷을 확인하고 다시 눌러 주세요'; $('goBtn').disabled = false; }
+}
+async function enter(){
+  try {
+    const d = await fsGet(`${COL}/${AUTH.uid}`);
+    if (d && d.fields && d.fields.data) { const saved = JSON.parse(d.fields.data.stringValue); S = Object.assign(blank(), saved); S.s1 = Object.assign(blank().s1, S.s1); }
+  } catch (e) {}
+  $('start').classList.remove('on'); $('main').classList.add('on'); $('qbtn').style.display = 'block';
+  $('who').textContent = `${ME.cls}반 ${ME.num}번 ${ME.name} · ${ME.group}모둠`;
+  initS1(); initS2(); initS3(); initS4(); initS5(); initQ();
+  await pollCtrl(); renderTabs(); go(Math.min(STAGE, Math.max(1, Math.min(maxStageReached(), NSTAGE))));
+  saveNow();
+  setInterval(pollCtrl, 5000);
+}
+function resetLocal(){
+  if (!window.confirm('이 기기의 기록을 지우고 처음부터 시작할까요? (이미 보낸 기록은 선생님께 남아 있어요)')) return;
+  try { localStorage.removeItem(SKEY); } catch (e) {}
+  location.reload();
+}
+window.addEventListener('beforeunload', () => { if (dirty) saveNow(); });
+
+function boot(){
+  initStart();
+  $('resetBtn').onclick = resetLocal;
+  const s = load();
+  if (s && s.AUTH && s.ME) { AUTH = s.AUTH; ME = s.ME; enter(); }
+}
+window.LCL = { lclOf, parcelAt, rh, fmt, near, num, check2, check4, check5, blank, get S(){ return S; }, set S(v){ S = v; }, CONDS, C2, H2, QS3, MOLS, molState, pAt, maxStageReached, go, get STAGE(){ return STAGE; }, set STAGE(v){ STAGE = v; renderTabs(); }, get REVEAL(){ return REVEAL; }, set REVEAL(v){ REVEAL = v; applyS1(); } };
+boot();
+</script>
+</body>
+</html>
